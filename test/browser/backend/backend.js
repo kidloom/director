@@ -3,6 +3,8 @@ var http     = require('http'),
   path     = require('path'),
   director = require('../../../lib/director'),
   index;
+  
+var __dirname = path.dirname(module.uri);  
 
 fs.readFile(path.join(__dirname, '..', 'html5-routes-harness.html'), function (err, data) {
   if (err) {
@@ -16,8 +18,6 @@ var CONTENT_TYPES = {
   '.js'  : 'text/javascript',
   '.css' : 'text/css'
 };
-
-var dirname = path.dirname(module.uri);
 
 // Dummy file server
 function fileServer(folder, file) {
