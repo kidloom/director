@@ -1,8 +1,8 @@
 
 
 //
-// Generated on Tue Dec 16 2014 12:13:47 GMT+0100 (CET) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
-// Version 1.2.6
+// Generated on Wed May 27 2015 15:28:59 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Version 1.2.8
 //
 
 (function (exports) {
@@ -16,6 +16,7 @@
  */
 
 var dloc = document.location;
+var QUERY_SEPARATOR = /\?.*/;
 
 function dlocHashEmpty() {
   // Non-IE browsers return '' when the address bar shows '#'; Director's logic
@@ -188,17 +189,18 @@ Router.prototype.init = function (r) {
 
   listener.init(this.handler, this.history);
 
+  var empty = dlocHashEmpty();
   if (this.history === false) {
-    if (dlocHashEmpty() && r) {
+    if (empty && r) {
       dloc.hash = r;
-    } else if (!dlocHashEmpty()) {
+    } else if (!empty) {
       self.dispatch('on', '/' + dloc.hash.replace(/^(#\/|#|\/)/, ''));
     }
   }
   else {
     if (this.convert_hash_in_init) {
       // Use hash as route
-      routeTo = dlocHashEmpty() && r ? r : !dlocHashEmpty() ? dloc.hash.replace(/^#/, '') : null;
+      routeTo = empty && r ? r : !empty ? dloc.hash.replace(/^#/, '') : null;
       if (routeTo) {
         window.history.replaceState({}, document.title, routeTo);
       }
@@ -219,7 +221,7 @@ Router.prototype.init = function (r) {
 };
 
 Router.prototype.explode = function () {
-  var v = this.history === true ? this.getPath() : dloc.hash;
+  var v = this.history === true ? this.getPath() : dloc.hash.replace(QUERY_SEPARATOR, '');
   if (v.charAt(1) === '/') { v=v.slice(1) }
   return v.slice(1, v.length).split("/");
 };
@@ -270,7 +272,7 @@ Router.prototype.getRoute = function (v) {
   if (typeof v === "number") {
     ret = this.explode()[v];
   }
-  else if (typeof v === "string"){
+  else if (typeof v === "string") {
     var h = this.explode();
     ret = h.indexOf(v);
   }
@@ -292,7 +294,7 @@ Router.prototype.getPath = function () {
   if (path.substr(0, 1) !== '/') {
     path = '/' + path;
   }
-  return path;
+  return path.replace(QUERY_SEPARATOR, '');
 };
 function _every(arr, iterator) {
   for (var i = 0; i < arr.length; i += 1) {
@@ -395,7 +397,7 @@ Router.prototype.configure = function(options) {
   for (var i = 0; i < this.methods.length; i++) {
     this._methods[this.methods[i]] = true;
   }
-  this.recurse = options.recurse || this.recurse || false;
+  this.recurse = typeof options.recurse === "undefined" ? this.recurse || false : options.recurse;
   this.async = options.async || false;
   this.delimiter = options.delimiter || "/";
   this.strict = typeof options.strict === "undefined" ? true : options.strict;
@@ -461,7 +463,8 @@ Router.prototype.path = function(path, routesFn) {
 };
 
 Router.prototype.dispatch = function(method, path, callback) {
-  var self = this, fns = this.traverse(method, path.replace(QUERY_SEPARATOR, ""), this.routes, ""), invoked = this._invoked, after;
+  console.log("dispatch(", method, path, ")");
+  var self = this, params = this.parseParams(path), fns = this.traverse(method, path.replace(QUERY_SEPARATOR, ""), this.routes, ""), invoked = this._invoked, after;
   this._invoked = true;
   if (!fns || fns.length === 0) {
     this.last = [];
@@ -473,6 +476,7 @@ Router.prototype.dispatch = function(method, path, callback) {
     }
     return false;
   }
+  this.query = params;
   if (this.recurse === "forward") {
     fns = fns.reverse();
   }
@@ -592,7 +596,7 @@ Router.prototype.traverse = function(method, path, routes, regexp, filter) {
           fns = fns.concat(next);
         }
         if (this.recurse) {
-          fns.push([ routes[r].before, routes[r].on ].filter(Boolean));
+          fns.push([ routes[r].before, routes[r][method] ].filter(Boolean));
           next.after = next.after.concat([ routes[r].after ].filter(Boolean));
           if (routes === this.routes) {
             fns.push([ routes["before"], routes["on"] ].filter(Boolean));
@@ -719,6 +723,17 @@ Router.prototype.mount = function(routes, path) {
       insertOrMount(route, path.slice(0));
     }
   }
+};
+
+Router.prototype.parseParams = function(path) {
+  var match = path.match(QUERY_SEPARATOR);
+  if (!match) return null;
+  var query = match[0].substr(1), params = {}, decode = decodeURIComponent;
+  query.split(/&/g).forEach(function(part) {
+    var bits = part.split("=", 2), key = decode(bits[0]);
+    params[key] = bits.length > 1 ? decode(bits[1]) : true;
+  });
+  return params;
 };
 
 
