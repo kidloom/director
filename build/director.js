@@ -1,7 +1,7 @@
 
 
 //
-// Generated on Wed May 27 2015 15:28:59 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Generated on Thu May 28 2015 10:25:17 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
 // Version 1.2.8
 //
 
@@ -463,8 +463,9 @@ Router.prototype.path = function(path, routesFn) {
 };
 
 Router.prototype.dispatch = function(method, path, callback) {
-  console.log("dispatch(", method, path, ")");
-  var self = this, params = this.parseParams(path), fns = this.traverse(method, path.replace(QUERY_SEPARATOR, ""), this.routes, ""), invoked = this._invoked, after;
+  var params = this.parseParams(path);
+  path = path.replace(QUERY_SEPARATOR, "");
+  var self = this, fns = this.traverse(method, path, this.routes, ""), invoked = this._invoked, after;
   this._invoked = true;
   if (!fns || fns.length === 0) {
     this.last = [];
@@ -729,10 +730,23 @@ Router.prototype.parseParams = function(path) {
   var match = path.match(QUERY_SEPARATOR);
   if (!match) return null;
   var query = match[0].substr(1), params = {}, decode = decodeURIComponent;
-  query.split(/&/g).forEach(function(part) {
-    var bits = part.split("=", 2), key = decode(bits[0]);
-    params[key] = bits.length > 1 ? decode(bits[1]) : true;
-  });
+  if (query.length) {
+    query.split(/&/g).forEach(function(part) {
+      var bits = part.split("="), key = decode(bits.shift()), value = bits.length ? decode(bits.join("=")) : true;
+      set(key, value);
+    });
+  }
+  function set(key, value) {
+    if (params.hasOwnProperty(key)) {
+      if (Array.isArray(params[key])) {
+        params[key].push(value);
+      } else {
+        params[key] = [ params[key], value ];
+      }
+    } else {
+      params[key] = value;
+    }
+  }
   return params;
 };
 
