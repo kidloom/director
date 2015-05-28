@@ -1,7 +1,7 @@
 
 
 //
-// Generated on Thu May 28 2015 10:25:17 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Generated on Thu May 28 2015 10:30:31 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
 // Version 1.2.8
 //
 
@@ -448,6 +448,7 @@ Router.prototype.on = Router.prototype.route = function(method, path, route) {
   path = path.split(new RegExp(this.delimiter));
   path = terminator(path, this.delimiter);
   this.insert(method, this.scope.concat(path), route);
+  return this;
 };
 
 Router.prototype.path = function(path, routesFn) {
@@ -460,6 +461,7 @@ Router.prototype.path = function(path, routesFn) {
   this.scope = this.scope.concat(path);
   routesFn.call(this, this);
   this.scope.splice(length, path.length);
+  return this;
 };
 
 Router.prototype.dispatch = function(method, path, callback) {
