@@ -1,7 +1,7 @@
 
 
 //
-// Generated on Thu May 28 2015 10:34:28 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Generated on Thu May 28 2015 10:48:59 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
 // Version 1.2.8
 //
 
@@ -220,8 +220,9 @@ Router.prototype.init = function (r) {
   return this;
 };
 
-Router.prototype.explode = function () {
-  var v = this.history === true ? this.getPath() : dloc.hash.replace(QUERY_SEPARATOR, '');
+Router.prototype.explode = function (stripQuery) {
+  var v = this.history === true ? this.getPath() : dloc.hash;
+  if (stripQuery) v = v.replace(QUERY_SEPARATOR, '');
   if (v.charAt(1) === '/') { v=v.slice(1) }
   return v.slice(1, v.length).split("/");
 };
@@ -270,14 +271,14 @@ Router.prototype.getRoute = function (v) {
   var ret = v;
 
   if (typeof v === "number") {
-    ret = this.explode()[v];
+    ret = this.explode(true)[v];
   }
   else if (typeof v === "string") {
-    var h = this.explode();
+    var h = this.explode(true);
     ret = h.indexOf(v);
   }
   else {
-    ret = this.explode();
+    ret = this.explode(true);
   }
 
   return ret;
