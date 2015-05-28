@@ -1,7 +1,7 @@
 
 
 //
-// Generated on Thu May 28 2015 10:48:59 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Generated on Thu May 28 2015 11:01:37 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
 // Version 1.2.8
 //
 
@@ -221,9 +221,11 @@ Router.prototype.init = function (r) {
 };
 
 Router.prototype.explode = function (stripQuery) {
-  var v = this.history === true ? this.getPath() : dloc.hash;
-  if (stripQuery) v = v.replace(QUERY_SEPARATOR, '');
-  if (v.charAt(1) === '/') { v=v.slice(1) }
+  var v = this.history === true
+    ? this.getPath()
+    : dloc.hash;
+  if (stripQuery === true) v = v.replace(QUERY_SEPARATOR, '');
+  if (v.charAt(1) === '/') v = v.slice(1);
   return v.slice(1, v.length).split("/");
 };
 
