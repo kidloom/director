@@ -1,7 +1,7 @@
 
 
 //
-// Generated on Thu May 28 2015 10:30:31 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Generated on Thu May 28 2015 10:34:28 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
 // Version 1.2.8
 //
 
@@ -465,7 +465,7 @@ Router.prototype.path = function(path, routesFn) {
 };
 
 Router.prototype.dispatch = function(method, path, callback) {
-  var params = this.parseParams(path);
+  var query = this.parseQuery(path);
   path = path.replace(QUERY_SEPARATOR, "");
   var self = this, fns = this.traverse(method, path, this.routes, ""), invoked = this._invoked, after;
   this._invoked = true;
@@ -479,7 +479,7 @@ Router.prototype.dispatch = function(method, path, callback) {
     }
     return false;
   }
-  this.query = params;
+  this.query = query;
   if (this.recurse === "forward") {
     fns = fns.reverse();
   }
@@ -728,10 +728,10 @@ Router.prototype.mount = function(routes, path) {
   }
 };
 
-Router.prototype.parseParams = function(path) {
+Router.prototype.parseQuery = function(path) {
   var match = path.match(QUERY_SEPARATOR);
   if (!match) return null;
-  var query = match[0].substr(1), params = {}, decode = decodeURIComponent;
+  var query = match[0].substr(1), data = {}, decode = decodeURIComponent;
   if (query.length) {
     query.split(/&/g).forEach(function(part) {
       var bits = part.split("="), key = decode(bits.shift()), value = bits.length ? decode(bits.join("=")) : true;
@@ -739,17 +739,17 @@ Router.prototype.parseParams = function(path) {
     });
   }
   function set(key, value) {
-    if (params.hasOwnProperty(key)) {
-      if (Array.isArray(params[key])) {
-        params[key].push(value);
+    if (data.hasOwnProperty(key)) {
+      if (Array.isArray(data[key])) {
+        data[key].push(value);
       } else {
-        params[key] = [ params[key], value ];
+        data[key] = [ data[key], value ];
       }
     } else {
-      params[key] = value;
+      data[key] = value;
     }
   }
-  return params;
+  return data;
 };
 
 
