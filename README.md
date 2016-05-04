@@ -1,3 +1,42 @@
+### This fork has
+
+commit 4547ebe20ebb40a73e1fc6700d5f71e22da02344
+Author: cmwelsh <chris@cmwelsh.com>
+Date:   Tue Jan 20 16:23:15 2015 -0500
+
+    Fix error when user clicks a link within 500ms
+
+commit b5b2029f5beb02b5a5a7633bfeb069d56a17dfe0
+Author: Brian Merrifield <brian@cambridgesemantics.com>
+Date:   Tue Jul 28 16:08:57 2015 -0400
+
+    fix setRoute behavior
+
+commit 9a125503d7aaf92f858c25737defdb3720abc2f0
+Author: Shawn Allen <shawn.allen@gsa.gov>                                                                                                                                                                                                                                                                                   
+Date:   Thu May 28 11:01:52 2015 -0700                                                                                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                                                                                                            
+    (lots of commmits that i wont be pasting here, added support for query strings)
+
+commit 93ad9bf1d3e971d155e582dea32f2efa24f9fac7
+Author: dingrf <dingrf@yonyou.com>
+Date:   Wed May 6 14:03:31 2015 +0800
+
+    add Array.isArray and Array.filter function for old IE browsers.
+
+commit c221d6415c15a28363f3a0fa739ff136c392db51
+Author: Thomas Gorissen <mail@serrynaimo.com>
+Date:   Fri Jun 20 14:13:18 2014 +0800
+
+    Tests and fixes for HTML5 support (2+ commits I won't be pasting here)
+
+### BUILDING THIS SUCKS
+
+If you need to build, I recommend you removing the jslint code from node_modules/codesurgeon
+
+
+
+
 ![Logo](https://github.com/flatiron/director/raw/master/img/director.png)
 
 # Synopsis

@@ -1,7 +1,7 @@
 
 
 //
-// Generated on Thu May 28 2015 11:01:37 GMT-0700 (PDT) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Generated on Wed May 04 2016 15:27:06 GMT-0300 (ART) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
 // Version 1.2.8
 //
 
@@ -15,6 +15,28 @@
  *
  */
 
+Array.isArray = Array.isArray || function (obj) {
+	return Object.prototype.toString.call(obj) === '[object Array]';
+};
+
+Array.prototype.filter = Array.prototype.filter || function(fun){  
+        var len = this.length;  
+        if (typeof fun != "function"){  
+            throw new TypeError();  
+        }  
+        var res = new Array();  
+        var thisp = arguments[1];  
+        for (var i = 0; i < len; i++){  
+            if (i in this){  
+                var val = this[i];  
+                if (fun.call(thisp, val, i, this)) {  
+                    res.push(val);  
+                }  
+            }  
+        }  
+        return res;  
+};
+  
 var dloc = document.location;
 var QUERY_SEPARATOR = /\?.*/;
 
@@ -65,14 +87,7 @@ var listener = {
       || document.documentMode > 7)) {
       // At least for now HTML5 history is available for 'modern' browsers only
       if (this.history === true) {
-        // There is an old bug in Chrome that causes onpopstate to fire even
-        // upon initial page load. Since the handler is run manually in init(),
-        // this would cause Chrome to run it twise. Currently the only
-        // workaround seems to be to set the handler after the initial page load
-        // http://code.google.com/p/chromium/issues/detail?id=63040
-        setTimeout(function() {
-          window.onpopstate = onchange;
-        }, 500);
+        window.onpopstate = onchange;
       }
       else {
         window.onhashchange = onchange;
@@ -236,7 +251,12 @@ Router.prototype.setRoute = function (i, v, val) {
     url[i] = v;
   }
   else if (typeof val === 'string') {
-    url.splice(i, v, s);
+    url.splice(i, v, val);
+  }
+  else if (typeof i === 'number' && typeof v === 'number') {
+    if (i < url.length) {
+      url.splice(i, v);
+    }
   }
   else {
     url = [i];
@@ -293,7 +313,11 @@ Router.prototype.destroy = function () {
 
 Router.prototype.getPath = function () {
   var path = window.location.pathname;
+  
+  // Browsers love to add a trailing / on paths which
+  // breaks the initial routing in html5 
   path = path.replace(/\/$/, '');
+  
   if (path.substr(0, 1) !== '/') {
     path = '/' + path;
   }
