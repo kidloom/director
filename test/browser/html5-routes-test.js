@@ -1,4 +1,23 @@
-var browser_history_support = (window.history != null ? window.history.pushState : null) != null;
+var browser_history_support = (window.history !== null ? window.history.pushState : null) !== null;
+
+createTest('routes should parse query string parameters.', {
+  '/:a/b': function() { }
+}, function() {
+  this.navigate('/foo/b?x==y&z&x=2', function root() {
+    deepEqual(this.router.getRoute(), ['foo', 'b']);
+    deepEqual(this.router.query, {x: ['=y', '2'], z: true});
+    this.finish();
+  });
+});
+
+createTest('routes without query strings should yield no query.', {
+  '/:a/b': function() { }
+}, function() {
+  this.navigate('/foo/b', function root() {
+    equal(this.router.query, null);
+    this.finish();
+  });
+});
 
 createTest('Nested route with the many children as a tokens, callbacks should yield historic params', {
   '/a': {
@@ -639,7 +658,7 @@ createTest('setRoute with a single parameter should change location correctly', 
   setTimeout(function() {
     deepEqual(shared.fired, ['/bonk']);
     self.finish();
-  }, 14)
+  }, 14);
 });
 
 createTest('route should accept _ and . within parameters', {

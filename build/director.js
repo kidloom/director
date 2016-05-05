@@ -1,7 +1,7 @@
 
 
 //
-// Generated on Wed May 04 2016 15:27:06 GMT-0300 (ART) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
+// Generated on Thu May 05 2016 11:42:57 GMT-0300 (ART) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
 // Version 1.2.8
 //
 
@@ -24,7 +24,7 @@ Array.prototype.filter = Array.prototype.filter || function(fun){
         if (typeof fun != "function"){  
             throw new TypeError();  
         }  
-        var res = new Array();  
+        var res = [];
         var thisp = arguments[1];  
         for (var i = 0; i < len; i++){  
             if (i in this){  
@@ -61,7 +61,11 @@ var listener = {
 
   fire: function () {
     if (this.mode === 'modern') {
-      this.history === true ? window.onpopstate() : window.onhashchange();
+      if (this.history === true) {
+		window.onpopstate();
+	  } else {
+		window.onhashchange();
+	  }
     }
     else {
       this.onHashChanged();
@@ -83,8 +87,8 @@ var listener = {
     }
 
     //note IE8 is being counted as 'modern' because it has the hashchange event
-    if ('onhashchange' in window && (document.documentMode === undefined
-      || document.documentMode > 7)) {
+    if ('onhashchange' in window && (document.documentMode === undefined ||
+	  document.documentMode > 7)) {
       // At least for now HTML5 history is available for 'modern' browsers only
       if (this.history === true) {
         window.onpopstate = onchange;
@@ -187,15 +191,15 @@ var Router = exports.Router = function (routes) {
   this._insert = this.insert;
   this.insert = this.insertEx;
 
-  this.historySupport = (window.history != null ? window.history.pushState : null) != null
+  this.historySupport = (window.history !== null ? window.history.pushState : null) !== null;
 
   this.configure();
   this.mount(routes || {});
 };
 
 Router.prototype.init = function (r) {
-  var self = this
-    , routeTo;
+  var self = this,
+    routeTo;
   this.handler = function(onChangeEvent) {
     var newURL = onChangeEvent && onChangeEvent.newURL || window.location.hash;
     var url = self.history === true ? self.getPath() : newURL.replace(/.*#/, '');
@@ -236,9 +240,7 @@ Router.prototype.init = function (r) {
 };
 
 Router.prototype.explode = function (stripQuery) {
-  var v = this.history === true
-    ? this.getPath()
-    : dloc.hash;
+  var v = this.history === true ? this.getPath() : dloc.hash;
   if (stripQuery === true) v = v.replace(QUERY_SEPARATOR, '');
   if (v.charAt(1) === '/') v = v.slice(1);
   return v.slice(1, v.length).split("/");
@@ -312,7 +314,7 @@ Router.prototype.destroy = function () {
 };
 
 Router.prototype.getPath = function () {
-  var path = window.location.pathname;
+  var path = window.location.pathname + window.location.search;
   
   // Browsers love to add a trailing / on paths which
   // breaks the initial routing in html5 
@@ -321,7 +323,7 @@ Router.prototype.getPath = function () {
   if (path.substr(0, 1) !== '/') {
     path = '/' + path;
   }
-  return path.replace(QUERY_SEPARATOR, '');
+  return path;
 };
 function _every(arr, iterator) {
   for (var i = 0; i < arr.length; i += 1) {

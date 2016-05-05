@@ -4,7 +4,8 @@ var http     = require('http'),
   director = require('../../../lib/director'),
   index;
   
-var __dirname = path.dirname(module.uri);  
+var __dirname = __dirname || path.dirname(module.uri);  
+console.log(__dirname);
 
 fs.readFile(path.join(__dirname, '..', 'html5-routes-harness.html'), function (err, data) {
   if (err) {
